@@ -1,6 +1,8 @@
-import React from 'react';
-import {ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress} from 'react-native';
-import {Notification,SearchNormal, Star1, Receipt21, Clock, Message, HambergerMenu, TextBold,searchText} from 'iconsax-react-native';
+import React, {useState} from 'react';
+import { ListHorizontal, ItemSmall } from './src/components';
+import { BlogList, CategoryList } from './data';
+import {ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress,FlatList} from 'react-native';
+import {Notification,SearchNormal, Star1, Receipt21, Clock, Message, HambergerMenu, TextBold,searchText,Element3} from 'iconsax-react-native';
 import { fontType, colors } from './src/theme';
 
 export default function App() {
@@ -10,7 +12,10 @@ export default function App() {
         <Text style={styles.title}>ParadisoNTT.</Text>
         <HambergerMenu color={colors.black()} variant="Linear" size={24} />
       </View>
-      <View style={{paddingHorizontal: 24, marginTop: 10, marginRight:20}}>
+      <Text style={{ ...styles.headtext, color:colors.black() }}>
+            Explore Destination In East Nusa Tenggara
+           </Text>
+           <View style={{paddingHorizontal: 24, marginTop: 15, marginBottom: 15, marginRight:20}}>
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.input}
@@ -22,7 +27,7 @@ export default function App() {
           <View style={styles.searchButtonContainer}>
             <TouchableOpacity style={styles.searchButton}>
               <SearchNormal
-                color={colors.black()}
+                color={colors.black() }
                 variant="Linear"
                 size={24}
                 style={styles.icon}
@@ -31,195 +36,120 @@ export default function App() {
           </View>
         </View>
         </View>
-        <View>
-           <TextInput style={styles.headtext}>
-            Explore Destination In East Nusa Tenggara
-           </TextInput>
-        </View> 
-      
       <View style={styles.listCategory}>
-        <View style={{ flexDirection:'row' }}>
-          <View style={{...category.item, marginLeft: 20}}>
-            <Text style={{...category.title, color: colors.aqua()}}>
-              All
-            </Text>
-          </View>
-          <View style={category.item}>
-            <Text style={category.title}>Popular</Text>
-          </View>
-          <View style={category.item}>
-            <Text style={category.title}>Recomended</Text>
-          </View>
-          <View style={category.item}>
-            <Text style={category.title}>Favorite</Text>
-          </View>
-        </View>
+        <FlatListCategory />
       </View>
       <ListBlog />
     </View>
   );
 }
 
-// App Styling
-
-const ListBlog = () => {
+const CategoryWisata = ({item, onPress, color}) => {
   return (
-    <ScrollView>
-      <View style={styles.listBlog}>
-        <ScrollView
-          showsHorizontalScrollIndicator={false}
-          horizontal
-          contentContainerStyle={{gap: 15}}>
-          <View style={{...itemHorizontal.cardItem, marginLeft: 24}}>
-            <ImageBackground
-              style={itemHorizontal.cardImage}
-              resizeMode="cover"
-              imageStyle={{borderRadius: 20}}
-              source={{
-                uri: 'https://i.pinimg.com/564x/db/dc/49/dbdc494067a2eef419c0161af6f20c2c.jpg',
-              }}>
-              <View style={itemHorizontal.cardContent}>
-                <View style={itemHorizontal.cardInfo}>
-                  <Text style={itemHorizontal.cardTitle}>
-                    Oetune Beach
-                  </Text>
-                  <Text style={itemHorizontal.cardText}>TTS, East Nusa Tenggara </Text>
-                </View>
-                <View style={styles.staricon}>
-                     <Star1 color={colors.gold()} variant="Linear" size={15} />
-                </View>
-                <Text style={{ color:colors.white(), fontWeight:'bold', fontSize:12, marginTop:155, marginLeft:5 }}>4,7 (722)</Text>
-              </View>
-            </ImageBackground>
-          </View>
-          <View style={itemHorizontal.cardItem}>
-            <ImageBackground
-              style={itemHorizontal.cardImage}
-              resizeMode="cover"
-              imageStyle={{borderRadius: 15}}
-              source={{
-                uri: 'https://i.pinimg.com/564x/4d/40/2f/4d402f28517d23a2725a3a01b61f756c.jpg',
-              }}>
-              <View style={itemHorizontal.cardContent}>
-                <View style={itemHorizontal.cardInfo}>
-                  <Text style={itemHorizontal.cardTitle}>
-                    Taman Nasional Komodo
-                  </Text>
-                  <Text style={itemHorizontal.cardText}>Manggarai Reg, East Nusa Tenggara</Text>
-                </View>
-                <View style={styles.staricon2}>
-                <Star1 color={colors.gold()} variant="Linear" size={15} />
-                </View>
-                <Text style={{ color:colors.white(), fontWeight:'bold', fontSize:12, marginTop:155, marginLeft:5 }}>4,7 (999)</Text>
-              </View>
-            </ImageBackground>
-          </View>
-          <View style={itemHorizontal.cardItem}>
-            <ImageBackground
-              style={itemHorizontal.cardImage}
-              resizeMode="cover"
-              imageStyle={{borderRadius: 15}}
-              source={{
-                uri: 'https://i.pinimg.com/564x/d4/77/52/d47752d6d51e15ae82467c077508b7bb.jpg',
-              }}>
-              <View style={itemHorizontal.cardContent}>
-                <View style={itemHorizontal.cardInfo}>
-                  <Text style={itemHorizontal.cardTitle}>
-                    Kelimutu Lake
-                  </Text>
-                  <Text style={itemHorizontal.cardText}>Ende Reg, East Nusa Tenggara</Text>
-                </View>
-                <View style={styles.staricon3}>
-                <Star1 color={colors.gold()} variant="Linear" size={15} />
-                </View>
-                <Text style={{ color:colors.white(), fontWeight:'bold', fontSize:12, marginTop:155, marginLeft:5 }}>4,7 (305)</Text>
-              </View>
-            </ImageBackground>
-          </View>
-          <View style={{...itemHorizontal.cardItem, marginRight: 24}}>
-            <ImageBackground
-              style={itemHorizontal.cardImage}
-              resizeMode="cover"
-              imageStyle={{borderRadius: 15}}
-              source={{
-                uri: 'https://i.pinimg.com/564x/3a/e2/ac/3ae2acff4f16843257575fc269ed088e.jpg',
-              }}>
-              <View style={itemHorizontal.cardContent}>
-                <View style={itemHorizontal.cardInfo}>
-                  <Text style={itemHorizontal.cardTitle}>
-                    Waerebo Village
-                  </Text>
-                  <Text style={itemHorizontal.cardText}>Manggarai Reg, East Nusa Tenggara</Text>
-                </View>
-                <View style={styles.staricon4}>
-                <Star1 color={colors.gold()} variant="Linear" size={15} />
-                </View>
-                <Text style={{ color:colors.white(), fontWeight:'bold', fontSize:12, marginTop:155, marginLeft:5 }}>4,7 (963)</Text>
-              </View>
-            </ImageBackground>
-          </View>
-        </ScrollView>
-        <View>
-           <Text style={styles.cattext}>
-               Categories
-           </Text>
-        </View> 
-        <View style={itemVertical.listCard}>
-          <View style={itemVertical.cardItem}>
-            <Image
-              style={itemVertical.cardImage}
-              source={{
-                uri: 'https://i.pinimg.com/564x/55/26/09/5526094abe1fec135d6b3db15634d6b7.jpg',
-              }}
-            />
-            <View style={itemVertical.cardContent}>
-              <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>Beach</Text>
-            </View>            
-          </View>
-        </View>
-         <View style={itemVertical.listCard}>
-          <View style={itemVertical.cardItem}>
-            <Image
-              style={itemVertical.cardImage}
-              source={{
-                uri: 'https://i.pinimg.com/736x/1d/7e/80/1d7e80368671a9f4c4e5a899f29b9812.jpg',
-              }}
-            />
-            <View style={itemVertical.cardContent}>
-              <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>Mountain</Text>
-            </View>            
-          </View>
-        </View>
-        </View>
-         <View style={itemVertical.listCard}>
-          <View style={itemVertical.cardItem}>
-            <Image
-              style={itemVertical.cardImage}
-              source={{
-                uri: 'https://i.pinimg.com/564x/88/c4/c1/88c4c1d3fe68f165f468de292704940d.jpg',
-              }}
-            />
-            <View style={itemVertical.cardContent}>
-              <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>WaterFall</Text>
-            </View>            
-          </View>
-        </View>
-        <View style={itemVertical.listCard}>
-          <View style={itemVertical.cardItem}>
-            <Image
-              style={itemVertical.cardImage}
-              source={{
-                uri: 'https://i.pinimg.com/564x/55/26/09/5526094abe1fec135d6b3db15634d6b7.jpg',
-              }}
-            />
-            <View style={itemVertical.cardContent}>
-              <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>Lake</Text>
-            </View>            
-          </View>
-        </View>
-        </ScrollView>
+    <TouchableOpacity onPress={onPress}>
+      <View style={category.item}>
+        <Text style={{...category.title, color}}>{item.categoryName}</Text>
+      </View>
+    </TouchableOpacity>
   );
 };
+
+const FlatListCategory = () => {
+  const [selected, setSelected] = useState(1);
+  const renderItem = ({item}) => {
+    const color = item.id === selected ? colors.blue() : colors.black();
+    return (
+      <CategoryWisata
+        item={item}
+        onPress={() => setSelected(item.id)}
+        color={color}
+      />
+    );
+  };
+  return (
+    <FlatList
+      data={CategoryList}
+      keyExtractor={item => item.id}
+      renderItem={item => renderItem({...item})}
+      ItemSeparatorComponent={() => <View style={{width: 5}} />}
+      contentContainerStyle={{paddingLeft: 5}}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+    />
+  );
+};
+
+  const ListBlog = () => {
+    //Data Wisata Horizontal
+    const horizontalData = BlogList.slice(0, 4);
+    //Data Category Vertical
+    return (
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.listBlog}>
+          <ListHorizontal data={horizontalData} />
+        </View>
+    <ScrollView>
+    <View>
+       <Text style={styles.cattext}>
+           Categories
+       </Text>
+    </View> 
+    <View style={itemVertical.listCard}>
+      <View style={itemVertical.cardItem}>
+        <Image
+          style={itemVertical.cardImage}
+          source={{
+            uri: 'https://i.pinimg.com/564x/55/26/09/5526094abe1fec135d6b3db15634d6b7.jpg',
+          }}
+        />
+        <View style={itemVertical.cardContent}>
+          <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>Beach</Text>
+        </View>            
+      </View>
+    </View>
+     <View style={itemVertical.listCard}>
+      <View style={itemVertical.cardItem}>
+        <Image
+          style={itemVertical.cardImage}
+          source={{
+            uri: 'https://i.pinimg.com/736x/1d/7e/80/1d7e80368671a9f4c4e5a899f29b9812.jpg',
+          }}
+        />
+        <View style={itemVertical.cardContent}>
+          <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>Mountain</Text>
+        </View>            
+      </View>
+    </View>
+     <View style={itemVertical.listCard}>
+      <View style={itemVertical.cardItem}>
+        <Image
+          style={itemVertical.cardImage}
+          source={{
+            uri: 'https://i.pinimg.com/564x/88/c4/c1/88c4c1d3fe68f165f468de292704940d.jpg',
+          }}
+        />
+        <View style={itemVertical.cardContent}>
+          <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>WaterFall</Text>
+        </View>            
+      </View>
+    </View>
+    <View style={itemVertical.listCard}>
+      <View style={itemVertical.cardItem}>
+        <Image
+          style={itemVertical.cardImage}
+          source={{
+            uri: 'https://i.pinimg.com/564x/55/26/09/5526094abe1fec135d6b3db15634d6b7.jpg',
+          }}
+        />
+        <View style={itemVertical.cardContent}>
+          <Text style={{ color:colors.aqua(), fontWeight:'bold', fontSize:30, textAlign:'center', marginTop:10 }}>Lake</Text>
+        </View>            
+      </View>
+    </View>
+    </ScrollView>
+      </ScrollView>
+    );
+  };
 
 // Styling
 
@@ -322,12 +252,17 @@ const styles = StyleSheet.create({
     paddingTop:8,
     paddingBottom:4
   },
+  listCard: {
+    marginBottom: 25,
+    gap: 15,
+    marginLeft: 25,
+  },
   title: {
     fontSize: 20,
     fontFamily: fontType['Pjs-ExtraBold'],
     color: colors.black(),
     fontWeight: 'bold',
-    paddingTop: 5,
+    paddingTop: 10,
   },
   searchContainer : {
     flexDirection: 'row',
@@ -403,7 +338,7 @@ const category = StyleSheet.create({
   item: {
     paddingHorizontal: 14,
     paddingVertical: 10,
-    marginLeft: 10,
+    marginLeft: 15,
     borderRadius: 25,
     alignItems: 'left',
     backgroundColor: colors.purple(0.1),
