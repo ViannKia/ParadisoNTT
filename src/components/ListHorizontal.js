@@ -3,9 +3,14 @@ import React, {useState} from 'react';
 import {Receipt21} from 'iconsax-react-native';
 import FastImage from 'react-native-fast-image';
 import { fontType, colors } from '../theme';
+import { useNavigation} from '@react-navigation/native';
+
+const navigation = useNavigation();
+
 const ItemHorizontal = ({item, variant, onPress}) => {
   return (
-    <View style={itemHorizontal.cardItem}>
+    <TouchableOpacity style={itemHorizontal.cardItem} onPress={() => navigation.navigate('Detail', {id: item.id})}>
+      <View style={itemHorizontal.cardItem}>
       <FastImage
         style={itemHorizontal.cardImage}
         source={{
@@ -29,9 +34,12 @@ const ItemHorizontal = ({item, variant, onPress}) => {
         </View>
       </FastImage>
     </View>
+    </TouchableOpacity>
   );
 };
+
 const ListHorizontal = ({data}) => {
+
   const [bookmark, setBookmark] = useState([]);
   const toggleBookmark = itemId => {
     if (bookmark.includes(itemId)) {
@@ -40,6 +48,7 @@ const ListHorizontal = ({data}) => {
       setBookmark([...bookmark, itemId]);
     }
   };
+
   const renderItem = ({item}) => {
     variant = bookmark.includes(item.id) ? 'Bold' : 'Linear';
     return (
@@ -50,6 +59,7 @@ const ListHorizontal = ({data}) => {
       />
     );
   };
+
   return (
     <FlatList
       data={data}
@@ -62,7 +72,10 @@ const ListHorizontal = ({data}) => {
     />
   );
 };
+
 export default ListHorizontal;
+
+
 const itemHorizontal = StyleSheet.create({
   cardItem: {
     width: 280,

@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
 import {ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress,FlatList} from 'react-native';
 import {Notification,SearchNormal, Star1, Receipt21, Clock, Message, HambergerMenu, TextBold,searchText,Element3} from 'iconsax-react-native';
-import {CategoryList, BlogList} from '../../../data';
+import {CategoryList, BlogList, DetailWisata} from '../../../data';
 import { ListHorizontal} from '../../components';
 import { fontType, colors } from '../../theme';
+import { useNavigation, createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+
 
 export default function App() {
   return (
@@ -43,6 +46,18 @@ export default function App() {
     </View>
   );
 }
+
+const Stack = createStackNavigator();
+const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Detail" component={Detail} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 const CategoryWisata = ({item, onPress, color}) => {
   return (
@@ -86,7 +101,10 @@ const FlatListCategory = () => {
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.listBlog}>
-          <ListHorizontal data={horizontalData} />
+          <ListHorizontal data={horizontalData}/>
+          {horizontalData.map((item, index) => {
+            <ListHorizontal item={item} key={index} />
+          })} 
         </View>
     <ScrollView>
     <View>

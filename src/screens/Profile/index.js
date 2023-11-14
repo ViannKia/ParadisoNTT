@@ -1,19 +1,18 @@
-import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity,} from 'react-native';
 import {Setting2, Location} from 'iconsax-react-native';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import {ProfileData, BlogList} from '../../../data';
 import {ItemSmall} from '../../components';
-import { fontType, colors } from '../../theme';
+import {fontType, colors} from '../../theme';
 
 const data = BlogList.slice(5);
 const Profile = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-      </View>
+      <View style={styles.header}></View>
       <View>
-      <Image
+        <Image
           style={itemVertical.cardImage}
           source={{
             uri: 'https://i.pinimg.com/564x/4d/40/2f/4d402f28517d23a2725a3a01b61f756c.jpg',
@@ -26,7 +25,7 @@ const Profile = () => {
           paddingHorizontal: 24,
           gap: 10,
           paddingVertical: 20,
-        }}> 
+        }}>
         <View style={{gap: 15, alignItems: 'center'}}>
           <FastImage
             style={profile.pic}
@@ -40,23 +39,25 @@ const Profile = () => {
           <View style={{alignItems: 'center'}}>
             <Text style={profile.name}>{ProfileData.name}</Text>
           </View>
-          <View style={{ gap: 5, alignItems: 'center', flexDirection: 'row', marginTop:-10 }}>
-          <Location size="20" color="#000000" variant="Bold"/>
-          <Text style={profile.place}>{ProfileData.place}</Text>
+          <View
+            style={{
+              gap: 5,
+              alignItems: 'center',
+              flexDirection: 'row',
+              marginTop: -10,
+            }}>
+            <Location size="20" color="#000000" variant="Bold" />
+            <Text style={profile.place}>{ProfileData.place}</Text>
           </View>
-          <View>
-            <Text style={{ ...styles.bio, color:colors.black(), textAlign:'center', fontSize:20 ,fontWeight:'800',}}>
-                "Pencinta Wisata Alam".
-            </Text>
-          </View>
+          <Text style={{
+                color: colors.black(),
+                textAlign: 'center',
+                fontSize: 20,
+                fontWeight: '600',
+              }}>{ProfileData.tag}</Text>
           <TouchableOpacity style={profile.buttonEdit}>
             <Text style={profile.buttonText}>Edit Profile</Text>
           </TouchableOpacity>
-        </View>
-        <View style={{paddingVertical: 10, gap:10}}>
-          {data.map((item, index) => (
-            <ItemSmall item={item} key={index} />
-          ))}
         </View>
       </ScrollView>
     </View>
@@ -64,16 +65,17 @@ const Profile = () => {
 };
 
 const itemVertical = StyleSheet.create({
-    cardImage: {
-        width: '115%',
-        height: 700,
-        marginBottom: -600,
-        marginLeft: -27,
-        opacity: 0.8,
-        borderTopRightRadius: 200,
-        borderTopLeftRadius: 200,
-        resizeMode: 'cover',
-      },
+  cardImage: {
+    width: '115%',
+    height: 700,
+    marginTop: 80,
+    marginLeft: -27,
+    marginBottom: -800,
+    opacity: 0.8,
+    borderTopRightRadius: 200,
+    borderTopLeftRadius: 200,
+    resizeMode: 'cover',
+  },
 });
 
 export default Profile;
@@ -106,14 +108,14 @@ const profile = StyleSheet.create({
     fontSize: 20,
     fontWeight: '900',
     fontFamily: fontType['Pjs-Bold'],
-    textTransform:'capitalize'
+    textTransform: 'capitalize',
   },
   place: {
     color: colors.black(),
     fontSize: 16,
     fontWeight: '800',
     fontFamily: fontType['Pjs-Bold'],
-    textTransform:'capitalize'
+    textTransform: 'capitalize',
   },
   info: {
     fontSize: 12,

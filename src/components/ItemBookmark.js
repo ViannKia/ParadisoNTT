@@ -3,14 +3,7 @@ import React from 'react';
 import {Receipt21, Clock, Message} from 'iconsax-react-native';
 import FastImage from 'react-native-fast-image';
 import { fontType, colors } from '../theme';
-
-const truncateTextByWords = (text, maxWords) => {
-  const words = text.split(' ');
-  if (words.length > maxWords) {
-    return words.slice(0, maxWords).join(' ') + ' ...';
-  }
-  return text;
-}
+import {useNavigation} from '@react-navigation/native';
 
 const ItemBookmark = ({item, onPress, variant}) => {
   return (
@@ -43,10 +36,6 @@ const ItemBookmark = ({item, onPress, variant}) => {
             <Text
               style={styles.blogTitle}>
               {item.title}
-            </Text>
-            <Text
-              style={styles.blogContent}>
-              {truncateTextByWords(item.content, 10)}
             </Text>
           </View>
           <View style={styles.cardInfo}>

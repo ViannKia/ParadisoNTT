@@ -1,32 +1,50 @@
 import React, {useState} from 'react';
-import { ListHorizontal} from '../../components';
-import { DetailWisata} from '../../../data';
+import { BlogList, DetailWisata} from '../../../data';
 import FastImage from 'react-native-fast-image';
-import { ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress,FlatList, Button, TouchableHighlight} from 'react-native';
+import { ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress,FlatList, Button, TouchableHighlight,} from 'react-native';
 import { Notification, Location, Save2, SearchNormal, Star1, Receipt21, Clock, Message, HambergerMenu,Back, TextBold,searchText,Element3} from 'iconsax-react-native';
 import { fontType, colors } from '../../theme';
+import { useNavigation} from '@react-navigation/native';
 
-export default function Detail() {
-  
-const [iconColor, setIconColor] = useState('black');
+const Detail = ({route}) => {
+  const {id} = route.params;
 
-const handleIconPress = () => {
+  const [iconColor, setIconColor] = useState('black');
+  const handleIconPress = () => {
   // Ganti warna ikon bookmark saat ditekan
   if (iconColor === 'black') {
     setIconColor('aqua');
   } else {
     setIconColor('black');
   }
-};
-
+  };
+  const [iconStates, setIconStates] = useState({
+  bookmarked: {variant: 'Linear', color: colors.grey(0.6)},
+  });
+  const selectedDetail = BlogList.find(wisata => wisata?.id === id);
+  const navigation = useNavigation();
+  console.log('Selected Detail:', selectedDetail);
+  const toggleIcon = iconName => {
+    setIconStates(prevStates => ({
+      ...prevStates,
+      [iconName]: {
+        variant: prevStates[iconName].variant === 'Linear' ? 'Bold' : 'Linear',
+        color:
+          prevStates[iconName].variant === 'Linear'
+            ? colors.blue()
+            : colors.grey(0.6),
+      },
+    }));
+  };
+  
   return (
-    <ScrollView>
+    <ScrollView>  
     <View style={styles.container}>
       <View style={styles.header}>
       <FastImage
             style={itemHorizontal.cardImage} 
             source={{
-              uri: DetailWisata.dataimg,
+              uri: selectedDetail?.image,
               headers: {Authorization: 'someAuthToken'},
               priority: FastImage.priority.high,
             }}
@@ -34,39 +52,40 @@ const handleIconPress = () => {
           />
       </View>
       <View>
-      <TouchableOpacity>
-      <Back color={colors.white()} variant="Bulk" position={'absolute'} size={40} marginLeft={20} bottom={140} />
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <Back color={colors.white()} variant="Bulk" position={'absolute'} size={50} marginLeft={20} bottom={150} />
       </TouchableOpacity>
       </View>
       <View>
-        <Text style={{ ...styles.headtext, color:colors.aqua()}}>{DetailWisata.namawisata}</Text>
+        <Text style={{ ...styles.headtext, color:colors.aqua()}}>{selectedDetail?.title}</Text>
       </View>
       <Location color={colors.black()} variant="Linear" size={20} marginLeft={13} marginTop={5} />
       <View>
-        <Text style={{ ...styles.location, color:colors.black()}}>{DetailWisata.loctwisata}</Text>
+        <Text style={{ ...styles.location, color:colors.black()}}>{selectedDetail?.loctwisata}</Text>
       </View>
       <View>
+      <View>
+        <Text style={{ ...styles.rating, color:colors.black()}}>{selectedDetail?.totalComments}</Text>
+      </View>
+
       <TouchableOpacity onPress={handleIconPress}>
         <View style={styles.saveicon}>
         <Save2 size={30} color={iconColor} />
         </View>
       </TouchableOpacity> 
       <Star1 color={colors.gold()} variant="Linear" size={20} marginLeft={350} marginTop={-20} />
-      <Text style={{ ...styles.rating, color:colors.black() }}>
-            4,7
-      </Text>
       </View>
       <View>
-      <Text style={{ ...styles.budget, color:colors.black() }}>
-            $23.88/Person
-      </Text>
+      <View>
+        <Text style={{ ...styles.budget, color:colors.black()}}>{selectedDetail?.price}</Text>
+      </View>
       </View>
       <View style={{ backgroundColor: colors.aqua(), borderRadius:20, marginLeft:5, marginRight:6, marginTop:20 }}>
       <Text style={{ ...styles.headdesc, color:colors.white()}}>
             Description
       </Text>
       <View>
-        <Text style={{ ...styles.desc, color:colors.white()}}>{DetailWisata.descwisata}</Text>
+        <Text style={{ ...styles.desc, color:colors.white()}}>{selectedDetail?.descwisata}</Text>
       </View>
       </View>
       <View>
@@ -85,7 +104,8 @@ const handleIconPress = () => {
     </View>
     </ScrollView>
   );
-}
+};
+export default Detail;
 
 // Styling
 
