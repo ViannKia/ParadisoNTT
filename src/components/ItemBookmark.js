@@ -45,7 +45,7 @@ const ItemBookmark = ({item, onPress, variant}) => {
                 variant="Linear"
                 color={colors.grey(0.6)}
               />
-              <Text style={styles.cardText}>{item.createdAt}</Text>
+              <Text style={styles.cardText}>{item.loctwisata}</Text>
             </View>
             <View style={{flexDirection: 'row', alignItems: 'center', gap:5}}>
               <Message

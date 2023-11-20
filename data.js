@@ -15,6 +15,10 @@ export const CategoryList = [
     id: 4,
     categoryName: 'Favorite',
   },
+  // {
+  //   id: 5,
+  //   categoryName: 'Good',
+  // },
 ];
 export const BlogList = [
   {

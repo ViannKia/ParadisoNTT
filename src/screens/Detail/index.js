@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import { BlogList, DetailWisata} from '../../../data';
+import React, {useState, useRef} from 'react';
+import { BlogList} from '../../../data';
 import FastImage from 'react-native-fast-image';
-import { ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress,FlatList, Button, TouchableHighlight,} from 'react-native';
-import { Notification, Location, Save2, SearchNormal, Star1, Receipt21, Clock, Message, HambergerMenu,Back, TextBold,searchText,Element3} from 'iconsax-react-native';
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import { Location, Save2, Star1,Back,} from 'iconsax-react-native';
 import { fontType, colors } from '../../theme';
 import { useNavigation} from '@react-navigation/native';
 
@@ -61,7 +61,7 @@ const Detail = ({route}) => {
       </View>
       <Location color={colors.black()} variant="Linear" size={20} marginLeft={13} marginTop={5} />
       <View>
-        <Text style={{ ...styles.location, color:colors.black()}}>{selectedDetail?.loctwisata}</Text>
+        <Text style={{ ...styles.location, color:colors.black()}}>{selectedDetail?.createdAt}</Text>
       </View>
       <View>
       <View>

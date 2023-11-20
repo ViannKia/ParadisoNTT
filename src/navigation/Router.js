@@ -66,18 +66,6 @@ const Router = () => {
         component={MainApp}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
-        name="WisataDetail"
-        component={Detail}
-        options={{
-          headerShown: false, 
-          animationEnabled: true,
-          animationTypeForReplace: 'pop',
-          gestureEnabled: true,
-          gestureDirection : 'horizontal',
-          ...TransitionPresets.SlideFromRightIOS,
-        }}
-      /> */}
       <Stack.Screen
         name="Detail"
         component={Detail}

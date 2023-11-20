@@ -1,14 +1,20 @@
-import React, {useState} from 'react';
-import {ScrollView, StyleSheet,  Text, View, Image, ImageBackground, TextInput, TouchableOpacity, handleSearchPress,FlatList} from 'react-native';
-import {Notification,SearchNormal, Star1, Receipt21, Clock, Message, HambergerMenu, TextBold,searchText,Element3} from 'iconsax-react-native';
-import {CategoryList, BlogList, DetailWisata} from '../../../data';
+import React, {useState, useRef} from 'react';
+import { Animated, ScrollView, StyleSheet,  Text, View, Image, TextInput, TouchableOpacity, handleSearchPress,FlatList} from 'react-native';
+import { SearchNormal, HambergerMenu, searchText} from 'iconsax-react-native';
+import { CategoryList, BlogList} from '../../../data';
 import { ListHorizontal} from '../../components';
 import { fontType, colors } from '../../theme';
-import { useNavigation, createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 
-
 export default function App() {
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const diffClampY = Animated.diffClamp(scrollY, 0, 142);
+  const recentY = diffClampY.interpolate({
+    inputRange: [0, 142],
+    outputRange: [0, -142],
+    extrapolate: 'clamp',
+  });
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -27,7 +33,7 @@ export default function App() {
             value={searchText}
             placeholderTextColor="black"
           />
-          <View style={styles.searchButtonContainer}>
+          <View>
             <TouchableOpacity style={styles.searchButton}>
               <SearchNormal
                 color={colors.black() }
@@ -39,9 +45,9 @@ export default function App() {
           </View>
         </View>
         </View>
-      <View style={styles.listCategory}>
+      <Animated.View style={[styles.listCategory, {transform: [{translateY: recentY}]} ]}>
         <FlatListCategory />
-      </View>
+      </Animated.View>
       <ListBlog />
     </View>
   );
