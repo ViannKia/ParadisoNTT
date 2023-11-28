@@ -1,11 +1,12 @@
 import React, {useState, useRef} from 'react';
-import { Animated, ScrollView, StyleSheet,  Text, View, Image, TextInput, TouchableOpacity, handleSearchPress,FlatList} from 'react-native';
+import { TouchableWithoutFeedback, Animated, ScrollView, StyleSheet,  Text, View, Image, TextInput, TouchableOpacity, handleSearchPress,FlatList} from 'react-native';
 import { SearchNormal, HambergerMenu, searchText} from 'iconsax-react-native';
 import { CategoryList, BlogList} from '../../../data';
 import { ListHorizontal} from '../../components';
 import { fontType, colors } from '../../theme';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
 export default function App() {
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -15,35 +16,22 @@ export default function App() {
     outputRange: [0, -142],
     extrapolate: 'clamp',
   });
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>ParadisoNTT.</Text>
-        <HambergerMenu color={colors.black()} variant="Linear" size={24} />
       </View>
       <Text style={{ ...styles.headtext, color:colors.black() }}>
             Explore Destination In East Nusa Tenggara
            </Text>
            <View style={{paddingHorizontal: 24, marginTop: 15, marginBottom: 15, marginRight:20}}>
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Find You'r Destination..."
-            onChangeText={handleSearchPress}
-            value={searchText}
-            placeholderTextColor="black"
-          />
-          <View>
-            <TouchableOpacity style={styles.searchButton}>
-              <SearchNormal
-                color={colors.black() }
-                variant="Linear"
-                size={24}
-                style={styles.icon}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+           <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
+          <View style={styles.searchContainer}>
+            <SearchNormal color={colors.black()} variant="Linear" size={24} style={{ marginLeft:15, }}/>
+            <Text style={styles.placeholder}>Find You'r Destination Here...</Text>
+          </View>  
+        </TouchableWithoutFeedback>
         </View>
       <Animated.View style={[styles.listCategory, {transform: [{translateY: recentY}]} ]}>
         <FlatListCategory />
@@ -240,16 +228,6 @@ const FlatListCategory = () => {
       fontFamily: fontType['Pjs-Medium'],
       fontWeight: 'bold',
     },
-    searchbar: {
-      width: '90%',
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      borderRadius: 20,
-      paddingLeft: 40,
-      fontFamily: fontType['Pjs-Bold'],
-      fontSize: 15,
-    },
     searchIcon: {
       position: 'absolute',
       top: 8,
@@ -265,6 +243,13 @@ const FlatListCategory = () => {
     container: {
       flex: 1,
       backgroundColor: colors.pastel(),
+    },
+    placeholder: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      fontFamily: fontType['Pjs-Medium'],
+      color: colors.grey(0.6),
+      marginRight: 130,
     },
     header: {
       paddingHorizontal: 24,
@@ -286,21 +271,19 @@ const FlatListCategory = () => {
       fontFamily: fontType['Pjs-ExtraBold'],
       color: colors.black(),
       fontWeight: 'bold',
-      paddingTop: 10,
+      paddingTop: 15,
+      marginLeft: -9,
     },
     searchContainer : {
       flexDirection: 'row',
       alignItems: 'center',
-      marginRight: -23,
+      height: 45,
+      marginRight: -20,
       justifyContent:'space-between',
       borderRadius: 30,
       borderWidth: 2,
       borderColor: 'black',
       backgroundColor: 'white',
-    },
-    input: {
-      fontWeight: 'bold',
-      marginLeft: 35,
     },
     searchButton: {
       right: 330,
@@ -346,15 +329,9 @@ const FlatListCategory = () => {
       gap: 10,
     },
     searchbar: {
-      width: '100%',
-      height: 40,
-      borderColor: 'black',
-      borderWidth: 2,
-      borderRadius: 20,
-      marginHorizontal:50,
-      fontFamily: fontType['Pjs-Bold'],
-      fontSize: 15,
-      fontWeight: 'bold',
+      flex: 1,
+      marginLeft: 12,
+      marginTop: 13,
     },
   
   });

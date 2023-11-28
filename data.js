@@ -15,10 +15,6 @@ export const CategoryList = [
     id: 4,
     categoryName: 'Favorite',
   },
-  // {
-  //   id: 5,
-  //   categoryName: 'Good',
-  // },
 ];
 export const BlogList = [
   {
@@ -74,37 +70,6 @@ export const ProfileData = {
   place: 'Malang, Indonesia',
   tag: '"Pencinta Wisata Alam"',
 };
-
-// export const DetailWisata = [
-//   {
-//   id: 1,
-//   image: 'https://i.pinimg.com/564x/4d/40/2f/4d402f28517d23a2725a3a01b61f756c.jpg',
-//   namawisata: 'Komodo Island',
-//   loctwisata: 'Manggarai, East Nusa Tenggara',
-//   descwisata: 'Pulau Komodo adalah sebuah pulau yang terletak di Kepulauan Nusa Tenggara, berada di sebelah timur Pulau Sumbawa, yang dipisahkan oleh Selat Sape. Pulau Komodo dikenal sebagai habitat asli hewan komodo. Pulau ini termasuk salah satu kawasan Taman Nasional Komodo yang dikelola oleh Pemerintah Pusat.',
-//   },
-//   {
-//   id: 2,
-//   image: 'https://i.pinimg.com/564x/4d/40/2f/4d402f28517d23a2725a3a01b61f756c.jpg',
-//   namawisata: 'Komodo Island',
-//   loctwisata: 'Manggarai, East Nusa Tenggara',
-//   descwisata: 'Pulau Komodo adalah sebuah pulau yang terletak di Kepulauan Nusa Tenggara, berada di sebelah timur Pulau Sumbawa, yang dipisahkan oleh Selat Sape. Pulau Komodo dikenal sebagai habitat asli hewan komodo. Pulau ini termasuk salah satu kawasan Taman Nasional Komodo yang dikelola oleh Pemerintah Pusat.',
-// },
-// {
-//   id: 3,
-//   image: 'https://i.pinimg.com/564x/4d/40/2f/4d402f28517d23a2725a3a01b61f756c.jpg',
-//   namawisata: 'Komodo Island',
-//   loctwisata: 'Manggarai, East Nusa Tenggara',
-//   descwisata: 'Pulau Komodo adalah sebuah pulau yang terletak di Kepulauan Nusa Tenggara, berada di sebelah timur Pulau Sumbawa, yang dipisahkan oleh Selat Sape. Pulau Komodo dikenal sebagai habitat asli hewan komodo. Pulau ini termasuk salah satu kawasan Taman Nasional Komodo yang dikelola oleh Pemerintah Pusat.',
-//   },
-//   {
-//   id: 4,
-//   image: 'https://i.pinimg.com/564x/4d/40/2f/4d402f28517d23a2725a3a01b61f756c.jpg',
-//   namawisata: 'Komodo Island',
-//   loctwisata: 'Manggarai, East Nusa Tenggara',
-//   descwisata: 'Pulau Komodo adalah sebuah pulau yang terletak di Kepulauan Nusa Tenggara, berada di sebelah timur Pulau Sumbawa, yang dipisahkan oleh Selat Sape. Pulau Komodo dikenal sebagai habitat asli hewan komodo. Pulau ini termasuk salah satu kawasan Taman Nasional Komodo yang dikelola oleh Pemerintah Pusat.',
-// }
-// ];
 
 
 

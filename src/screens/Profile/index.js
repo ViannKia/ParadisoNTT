@@ -1,13 +1,21 @@
-import {ScrollView, StyleSheet, Text, View, Image, TouchableOpacity,} from 'react-native';
-import {Setting2, Location} from 'iconsax-react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import {Setting2, Location, Edit} from 'iconsax-react-native';
 import React from 'react';
 import FastImage from 'react-native-fast-image';
 import {ProfileData, BlogList} from '../../../data';
-import {ItemSmall} from '../../components';
 import {fontType, colors} from '../../theme';
+import {useNavigation} from '@react-navigation/native';
 
 const data = BlogList.slice(5);
 const Profile = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.header}></View>
@@ -49,17 +57,25 @@ const Profile = () => {
             <Location size="20" color="#000000" variant="Bold" />
             <Text style={profile.place}>{ProfileData.place}</Text>
           </View>
-          <Text style={{
-                color: colors.black(),
-                textAlign: 'center',
-                fontSize: 20,
-                fontWeight: '600',
-              }}>{ProfileData.tag}</Text>
+          <Text
+            style={{
+              color: colors.black(),
+              textAlign: 'center',
+              fontSize: 20,
+              fontWeight: '600',
+            }}>
+            {ProfileData.tag}
+          </Text>
           <TouchableOpacity style={profile.buttonEdit}>
             <Text style={profile.buttonText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => navigation.navigate('AddDataWisata')}>
+        <Edit color={colors.white()} variant="Linear" size={20} />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -83,6 +99,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.pastel(),
+  },
+  floatingButton: {
+    backgroundColor: colors.aqua(),
+    padding: 15,
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    borderRadius: 10,
+    shadowColor: colors.black(),
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+
+    elevation: 8,
   },
   header: {
     paddingHorizontal: 24,

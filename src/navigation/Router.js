@@ -1,9 +1,9 @@
 import React from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Home, Detail, Profile} from '../screens';
-import {Home2, ProfileCircle} from 'iconsax-react-native'; 
-import { fontType, colors } from '../theme';
+import {Home, Detail, Profile, AddDataWisata, Search} from '../screens';
+import {Home2, ProfileCircle} from 'iconsax-react-native';
+import {fontType, colors} from '../theme';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -70,11 +70,31 @@ const Router = () => {
         name="Detail"
         component={Detail}
         options={{
-         headerShown: false, 
+          headerShown: false,
           animationEnabled: true,
           animationTypeForReplace: 'pop',
           gestureEnabled: true,
-          gestureDirection : 'horizontal',
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="SearchPage"
+        component={Search}
+        options={{
+          headerShown: false,
+          presentation: 'transparentModal',
+        }}
+      />
+      <Stack.Screen
+        name="AddDataWisata"
+        component={AddDataWisata}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
           ...TransitionPresets.SlideFromRightIOS,
         }}
       />

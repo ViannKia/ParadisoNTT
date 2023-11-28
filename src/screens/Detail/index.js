@@ -1,14 +1,14 @@
 import React, {useState, useRef} from 'react';
 import { BlogList} from '../../../data';
 import FastImage from 'react-native-fast-image';
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Animated} from 'react-native';
 import { Location, Save2, Star1,Back,} from 'iconsax-react-native';
 import { fontType, colors } from '../../theme';
 import { useNavigation} from '@react-navigation/native';
 
 const Detail = ({route}) => {
   const {id} = route.params;
-
+  const scrollA = useRef(new Animated.Value(0)).current;
   const [iconColor, setIconColor] = useState('black');
   const handleIconPress = () => {
   // Ganti warna ikon bookmark saat ditekan
@@ -36,13 +36,19 @@ const Detail = ({route}) => {
       },
     }));
   };
-  
+
   return (
-    <ScrollView>  
-    <View style={styles.container}>
+    <Animated.ScrollView
+    showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [{nativeEvent: {contentOffset: {y: scrollA}}}],
+          {useNativeDriver: true},
+        )}
+        contentContainerStyle={{paddingTop: 10}}>
+      <View style={styles.container}>
       <View style={styles.header}>
-      <FastImage
-            style={itemHorizontal.cardImage} 
+      <Animated.Image
+            style={itemHorizontal.cardImage(scrollA)} 
             source={{
               uri: selectedDetail?.image,
               headers: {Authorization: 'someAuthToken'},
@@ -53,9 +59,12 @@ const Detail = ({route}) => {
       </View>
       <View>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-      <Back color={colors.white()} variant="Bulk" position={'absolute'} size={50} marginLeft={20} bottom={150} />
+      <Back color={colors.white()} variant="Bulk" position={'center'} size={50} marginLeft={20} bottom={180} />
       </TouchableOpacity>
       </View>
+      <View>
+      </View>
+      <View style={{backgroundColor:'white'}}>
       <View>
         <Text style={{ ...styles.headtext, color:colors.aqua()}}>{selectedDetail?.title}</Text>
       </View>
@@ -67,7 +76,6 @@ const Detail = ({route}) => {
       <View>
         <Text style={{ ...styles.rating, color:colors.black()}}>{selectedDetail?.totalComments}</Text>
       </View>
-
       <TouchableOpacity onPress={handleIconPress}>
         <View style={styles.saveicon}>
         <Save2 size={30} color={iconColor} />
@@ -93,6 +101,7 @@ const Detail = ({route}) => {
          Google Map Location
         </Text>
       </View>
+      </View>
       <View>
       <Image
           style={itemHorizontal.mapimg}
@@ -102,7 +111,7 @@ const Detail = ({route}) => {
         />
       </View>
     </View>
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 export default Detail;
@@ -143,14 +152,19 @@ const itemHorizontal = StyleSheet.create({
     borderRadius: 40,
     resizeMode: 'cover',
   },
-  cardImage: {
+  cardImage: scrollA => ({
     width: '113%',
     height: 300,
     marginTop: -15,
     marginLeft: -24,
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
-  },
+    transform: [
+      {
+      translateY: scrollA,
+    },
+    ]
+  }),
   cardContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -203,11 +217,11 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 24,
-    // justifyContent: 'space-between',
+    justifyContent: 'space-between',
     height: '25%',
     elevation: 8,
     paddingTop:8,
-    paddingBottom:4
+    paddingBottom:4,
   },
   listCard: {
     marginBottom: 25,
@@ -244,7 +258,7 @@ const styles = StyleSheet.create({
     headtext: {
     fontSize: 25,
     marginLeft: 15,
-    paddingTop: 100,
+    paddingTop: 15,
     fontWeight: 'bold',
     fontFamily: fontType['Pjs-ExtraBold'],
   },
