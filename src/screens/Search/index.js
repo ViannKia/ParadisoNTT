@@ -1,13 +1,13 @@
 import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
-import { SearchBar1 } from "../../components";
+import { SearchBar } from "../../components";
 import { fontType, colors } from "../../theme";
 const Search = () => {
   const [searchPhrase, setSearchPhrase] = useState("");
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <SearchBar1
+        <SearchBar
           searchPhrase={searchPhrase}
           setSearchPhrase={setSearchPhrase}
         />

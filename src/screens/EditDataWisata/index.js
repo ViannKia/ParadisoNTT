@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
 import {ArrowLeft} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 import {fontType, colors} from '../../theme';
 import axios from 'axios';
 
-const AddDataWisata = () => {
+const EditDataWisata = ({route}) => {
+const {id} = route.params;
   const dataCategory = [
     { id: 1, name: "Beach" },
     { id: 2, name: "Lake" },
@@ -21,8 +22,8 @@ const AddDataWisata = () => {
     createdAt: '',
     location: '',
     category: {},
-    totalComments: '',
-    price: '',
+    totalComments: 0,
+    price: 0,
   });
   const handleChange = (key, value) => {
     setWisataData({
@@ -34,19 +35,45 @@ const AddDataWisata = () => {
 
   const navigation = useNavigation();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    getWisataById();
+  }, [id]);
 
-  const handleUpload = async () => {
+  const getWisataById = async () => {
+    try {
+      const response = await axios.get(
+        `https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`,
+      );
+      setWisataData({
+        title : response.data.title,
+        descwisata : response.data.descwisata,
+        location : response.data.location,
+        totalComments : response.data.totalComments,
+        price : response.data.price,
+        category : {
+            id : response.data.category.id,
+            name : response.data.category.name
+        }
+      })
+    setImage(response.data.image)
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleUpdate = async () => {
     setLoading(true);
     try {
-      await axios.post('https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination', {
-          title: wisataData.title,
-          category: wisataData.category,
-          image,
-          descwisata: wisataData.descwisata,
-          totalComments: wisataData.totalComments,
-          location: wisataData.location,
-          price: wisataData.price,
+      await axios
+        .put(`https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`, {
+            title: wisataData.title,
+            category: wisataData.category,
+            image,
+            descwisata: wisataData.descwisata,
+            totalComments: wisataData.totalComments,
+            location: wisataData.location,
+            price: wisataData.price,
         })
         .then(function (response) {
           console.log(response);
@@ -60,14 +87,15 @@ const AddDataWisata = () => {
       console.log(e);
     }
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <ArrowLeft color={colors.black()} variant="Linear" size={24} />
         </TouchableOpacity>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.title}>Add New Destination</Text>
+        <View style={{flex: 1, alignItems: 'center'}}>
+          <Text style={styles.title}>Edit Destination</Text>
         </View>
       </View>
       <ScrollView
@@ -75,72 +103,70 @@ const AddDataWisata = () => {
           paddingHorizontal: 24,
           paddingVertical: 10,
           gap: 10,
-        }}
-      >
+        }}>
         <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Title"
             value={wisataData.title}
-            onChangeText={(text) => handleChange("title", text)}
+            onChangeText={text => handleChange('title', text)}
             placeholderTextColor={colors.grey(0.6)}
             multiline
             style={textInput.title}
           />
         </View>
-        <View style={[textInput.borderDashed, { minHeight: 250 }]}>
+        <View style={[textInput.borderDashed, {minHeight: 250}]}>
           <TextInput
             placeholder="Description"
-            value={wisataData.description}
-            onChangeText={(text) => handleChange("descwisata", text)}
+            value={wisataData.descwisata}
+            onChangeText={text => handleChange('descwisata', text)}
             placeholderTextColor={colors.grey(0.6)}
             multiline
-            style={textInput.description}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
           <TextInput
             placeholder="Image"
             value={image}
-            onChangeText={(text) => setImage(text)}
+            onChangeText={text => setImage(text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
           <TextInput
             placeholder="Location"
             value={wisataData.location}
-            onChangeText={(text) => handleChange("location", text)}
+            onChangeText={text => handleChange('location', text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
           <TextInput
             placeholder="Rating"
             value={wisataData.totalComments}
-            onChangeText={(text) => handleChange("totalComments", text)}
+            onChangeText={text => handleChange('totalComments', text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
           <TextInput
             placeholder="Price"
             value={wisataData.price}
-            onChangeText={(text) => handleChange("price", text)}
+            onChangeText={text => handleChange('price', text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
+            style={textInput.content}
           />
         </View>
         <View style={[textInput.borderDashed]}>
           <Text
             style={{
-              fontSize: 16,
-              fontFamily: fontType["Pjs-Regular"],
+              fontSize: 12,
+              fontFamily: fontType['Pjs-Regular'],
               color: colors.grey(0.6),
-            }}
-          >
+            }}>
             Category
           </Text>
           <View style={category.container}>
@@ -148,7 +174,7 @@ const AddDataWisata = () => {
               const bgColor =
                 item.id === wisataData.category.id
                   ? colors.aqua()
-                  : colors.grey(0.05);
+                  : colors.grey(0.08);
               const color =
                 item.id === wisataData.category.id
                   ? colors.white()
@@ -157,11 +183,10 @@ const AddDataWisata = () => {
                 <TouchableOpacity
                   key={index}
                   onPress={() =>
-                    handleChange("category", { id: item.id, name: item.name })
+                    handleChange('category', {id: item.id, name: item.name})
                   }
-                  style={[category.item, { backgroundColor: bgColor }]}
-                >
-                  <Text style={[category.name, { color: color }]}>
+                  style={[category.item, {backgroundColor: bgColor}]}>
+                  <Text style={[category.name, {color: color}]}>
                     {item.name}
                   </Text>
                 </TouchableOpacity>
@@ -171,46 +196,45 @@ const AddDataWisata = () => {
         </View>
       </ScrollView>
       <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+          <Text style={styles.buttonLabel}>Update</Text>
+        </TouchableOpacity>
+      </View>
       {loading && (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={colors.aqua()} />
+          <ActivityIndicator size="large" color={colors.blue()} />
         </View>
       )}
-      <TouchableOpacity style={styles.button} onPress={handleUpload}>
-          <Text style={styles.buttonLabel}>Add Destination</Text>
-      </TouchableOpacity>
-      </View>
     </View>
   );
 };
 
-export default AddDataWisata;
+export default EditDataWisata;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white(),
-    
   },
   header: {
     paddingHorizontal: 24,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 52,
     elevation: 8,
     paddingTop: 8,
     paddingBottom: 4,
   },
   title: {
-    fontFamily: fontType["Pjs-Bold"],
+    fontFamily: fontType['Pjs-Bold'],
     fontSize: 18,
+    marginRight: 25,
     fontWeight: 'bold',
     color: colors.black(),
-    marginTop: 15,
   },
   bottomBar: {
-    backgroundColor: colors.white(), 
-    alignItems: "flex-end",
+    backgroundColor: colors.white(),
+    alignItems: 'flex-end',
     paddingHorizontal: 24,
     paddingVertical: 10,
     shadowColor: colors.black(),
@@ -225,17 +249,15 @@ const styles = StyleSheet.create({
   },
   button: {
     paddingHorizontal: 20,
-    marginBottom: 15,
     paddingVertical: 10,
-    backgroundColor: colors.aqua(),
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: colors.blue(),
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonLabel: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    fontFamily: fontType["Pjs-SemiBold"],
+    fontSize: 14,
+    fontFamily: fontType['Pjs-SemiBold'],
     color: colors.white(),
   },
   loadingOverlay: {
@@ -251,28 +273,21 @@ const styles = StyleSheet.create({
 });
 const textInput = StyleSheet.create({
   borderDashed: {
-    borderStyle: "solid",
-    borderWidth: 2,
+    borderStyle: 'solid',
+    borderWidth: 1,
     borderRadius: 5,
     padding: 10,
-    borderColor: colors.aqua(0.5),
-    marginTop: 15,
+    borderColor: colors.aqua(0.8),
   },
   title: {
     fontSize: 16,
-    fontFamily: fontType["Pjs-SemiBold"],
+    fontFamily: fontType['Pjs-SemiBold'],
     color: colors.black(),
     padding: 0,
   },
-  description: {
-    fontSize: 16,
-    fontFamily: fontType["Pjs-Regular"],
-    color: colors.black(),
-    padding: 0,
-  },
-  image: {
-    fontSize: 16,
-    fontFamily: fontType["Pjs-Regular"],
+  content: {
+    fontSize: 12,
+    fontFamily: fontType['Pjs-Regular'],
     color: colors.black(),
     padding: 0,
   },
@@ -280,12 +295,12 @@ const textInput = StyleSheet.create({
 const category = StyleSheet.create({
   title: {
     fontSize: 12,
-    fontFamily: fontType["Pjs-Regular"],
+    fontFamily: fontType['Pjs-Regular'],
     color: colors.grey(0.6),
   },
   container: {
-    flexWrap: "wrap",
-    flexDirection: "row",
+    flexWrap: 'wrap',
+    flexDirection: 'row',
     gap: 10,
     marginTop: 10,
   },
@@ -295,7 +310,7 @@ const category = StyleSheet.create({
     borderRadius: 25,
   },
   name: {
-    fontSize: 11,
-    fontFamily: fontType["Pjs-Medium"],
+    fontSize: 10,
+    fontFamily: fontType['Pjs-Medium'],
   },
 });

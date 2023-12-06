@@ -26,12 +26,12 @@ export default function App() {
             Explore Destination In East Nusa Tenggara
            </Text>
            <View style={{paddingHorizontal: 24, marginTop: 15, marginBottom: 15, marginRight:20}}>
-           <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
+          <TouchableWithoutFeedback onPress={() => navigation.navigate("SearchPage")}>
           <View style={styles.searchContainer}>
             <SearchNormal color={colors.black()} variant="Linear" size={24} style={{ marginLeft:15, }}/>
             <Text style={styles.placeholder}>Find You'r Destination Here...</Text>
           </View>  
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
         </View>
       <Animated.View style={[styles.listCategory, {transform: [{translateY: recentY}]} ]}>
         <FlatListCategory />
@@ -48,6 +48,7 @@ const AppNavigator = () => {
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Detail" component={Detail} />
+        <Stack.Screen name="AddWisata" component={New} />
       </Stack.Navigator>
     </NavigationContainer>
   );

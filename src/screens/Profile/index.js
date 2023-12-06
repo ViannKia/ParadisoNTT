@@ -1,21 +1,12 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
-import {Setting2, Location, Edit} from 'iconsax-react-native';
-import React from 'react';
+import {ScrollView, StyleSheet, Text, Image, View, TouchableOpacity, ActivityIndicator, RefreshControl} from 'react-native';
+import {Edit, Location} from 'iconsax-react-native';
+import React, { useState, useCallback} from 'react';
 import FastImage from 'react-native-fast-image';
-import {ProfileData, BlogList} from '../../../data';
+import {ProfileData} from '../../../data';
 import {fontType, colors} from '../../theme';
-import {useNavigation} from '@react-navigation/native';
 
-const data = BlogList.slice(5);
-const Profile = () => {
-  const navigation = useNavigation();
+const Profile = () => { 
+
   return (
     <View style={styles.container}>
       <View style={styles.header}></View>
@@ -44,7 +35,7 @@ const Profile = () => {
             }}
             resizeMode={FastImage.resizeMode.cover}
           />
-          <View style={{alignItems: 'center'}}>
+          <View style={{gap: 5, alignItems: 'center'}}>
             <Text style={profile.name}>{ProfileData.name}</Text>
           </View>
           <View
@@ -71,11 +62,6 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
       </ScrollView>
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => navigation.navigate('AddDataWisata')}>
-        <Edit color={colors.white()} variant="Linear" size={20} />
-      </TouchableOpacity>
     </View>
   );
 };

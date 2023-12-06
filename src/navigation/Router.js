@@ -1,8 +1,16 @@
 import React from 'react';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {Home, Detail, Profile, AddDataWisata, Search} from '../screens';
-import {Home2, ProfileCircle} from 'iconsax-react-native';
+import {
+  Home,
+  Detail,
+  Profile,
+  AddDataWisata,
+  New,
+  Search,
+  EditDataWisata,
+} from '../screens';
+import {Home2, ProfileCircle, AddCircle} from 'iconsax-react-native';
 import {fontType, colors} from '../theme';
 
 const Tab = createBottomTabNavigator();
@@ -32,6 +40,21 @@ function MainApp() {
           tabBarLabel: 'Home',
           tabBarIcon: ({focused, color}) => (
             <Home2
+              color={color}
+              variant={focused ? 'Bold' : 'Linear'}
+              size={24}
+            />
+          ),
+          headerShown: false,
+        }}
+      />
+      <Tab.Screen
+        name="AddWisata"
+        component={New}
+        options={{
+          tabBarLabel: 'New',
+          tabBarIcon: ({focused, color}) => (
+            <AddCircle
               color={color}
               variant={focused ? 'Bold' : 'Linear'}
               size={24}
@@ -89,6 +112,18 @@ const Router = () => {
       <Stack.Screen
         name="AddDataWisata"
         component={AddDataWisata}
+        options={{
+          headerShown: false,
+          animationEnabled: true,
+          animationTypeForReplace: 'pop',
+          gestureEnabled: true,
+          gestureDirection: 'horizontal',
+          ...TransitionPresets.SlideFromRightIOS,
+        }}
+      />
+      <Stack.Screen
+        name="EditWisata"
+        component={EditDataWisata}
         options={{
           headerShown: false,
           animationEnabled: true,

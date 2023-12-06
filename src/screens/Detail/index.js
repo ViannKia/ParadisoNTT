@@ -1,10 +1,12 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import { BlogList} from '../../../data';
 import FastImage from 'react-native-fast-image';
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Animated} from 'react-native';
-import { Location, Save2, Star1,Back,} from 'iconsax-react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, Animated, ActivityIndicator} from 'react-native';
+import { Location, Save2, Star1, Back, More} from 'iconsax-react-native';
 import { fontType, colors } from '../../theme';
 import { useNavigation} from '@react-navigation/native';
+import axios from 'axios';
+import ActionSheet from 'react-native-actions-sheet';
 
 const Detail = ({route}) => {
   const {id} = route.params;
@@ -21,9 +23,9 @@ const Detail = ({route}) => {
   const [iconStates, setIconStates] = useState({
   bookmarked: {variant: 'Linear', color: colors.grey(0.6)},
   });
-  const selectedDetail = BlogList.find(wisata => wisata?.id === id);
+  // const selectedDetail = BlogList.find(wisata => wisata?.id === id);
   const navigation = useNavigation();
-  console.log('Selected Detail:', selectedDetail);
+  // console.log('Selected Detail:', selectedDetail);
   const toggleIcon = iconName => {
     setIconStates(prevStates => ({
       ...prevStates,
@@ -36,6 +38,51 @@ const Detail = ({route}) => {
       },
     }));
   };
+
+  const [selectedWisata, setSelectedWisata] = useState(null);
+
+  const [loading, setLoading] = useState(true);
+
+  const actionSheetRef = useRef(null);
+
+  const openActionSheet = () => {
+    actionSheetRef.current?.show();
+  };
+
+  const closeActionSheet = () => {
+    actionSheetRef.current?.hide();
+  };
+
+  useEffect(() => {
+    getWisataById();
+  }, [id]);
+  
+  const getWisataById = async () => {
+    try {
+      const response = await axios.get(
+        `https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`,
+      );
+      setSelectedWisata(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const navigateEdit = () => {
+    closeActionSheet()
+    navigation.navigate('EditWisata', {id})
+  }
+  const handleDelete = async () => {
+   await axios.delete(`https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`)
+      .then(() => {
+        closeActionSheet()
+        navigation.navigate('Profile');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
 
   return (
     <Animated.ScrollView
@@ -50,13 +97,21 @@ const Detail = ({route}) => {
       <Animated.Image
             style={itemHorizontal.cardImage(scrollA)} 
             source={{
-              uri: selectedDetail?.image,
+              uri: selectedWisata?.image,
               headers: {Authorization: 'someAuthToken'},
               priority: FastImage.priority.high,
             }}
             resizeMode={FastImage.resizeMode.cover}
           />
       </View>
+      <TouchableOpacity onPress={openActionSheet}>
+            <More
+              color={colors.white(1)}
+              variant="Bulk"
+              size={50}
+              style={{marginLeft: 340, marginTop: -180, transform: [{rotate: '90deg'}]}}
+            />
+          </TouchableOpacity>
       <View>
       <TouchableOpacity onPress={() => navigation.goBack()}>
       <Back color={colors.white()} variant="Bulk" position={'center'} size={50} marginLeft={20} bottom={180} />
@@ -64,17 +119,17 @@ const Detail = ({route}) => {
       </View>
       <View>
       </View>
-      <View style={{backgroundColor:'white'}}>
+      <View style={{marginTop: -20, backgroundColor:'white'}}>
       <View>
-        <Text style={{ ...styles.headtext, color:colors.aqua()}}>{selectedDetail?.title}</Text>
+        <Text style={{ ...styles.headtext, color:colors.aqua()}}>{selectedWisata?.title}</Text>
       </View>
       <Location color={colors.black()} variant="Linear" size={20} marginLeft={13} marginTop={5} />
       <View>
-        <Text style={{ ...styles.location, color:colors.black()}}>{selectedDetail?.createdAt}</Text>
+        <Text style={{ ...styles.location, color:colors.black()}}>{selectedWisata?.location}</Text>
       </View>
       <View>
       <View>
-        <Text style={{ ...styles.rating, color:colors.black()}}>{selectedDetail?.totalComments}</Text>
+        <Text style={{ ...styles.rating, color:colors.black()}}>{selectedWisata?.totalComments}</Text>
       </View>
       <TouchableOpacity onPress={handleIconPress}>
         <View style={styles.saveicon}>
@@ -85,7 +140,7 @@ const Detail = ({route}) => {
       </View>
       <View>
       <View>
-        <Text style={{ ...styles.budget, color:colors.black()}}>{selectedDetail?.price}</Text>
+        <Text style={{ ...styles.budget, color:colors.black()}}>{selectedWisata?.price}</Text>
       </View>
       </View>
       <View style={{ backgroundColor: colors.aqua(), borderRadius:20, marginLeft:5, marginRight:6, marginTop:20 }}>
@@ -93,7 +148,7 @@ const Detail = ({route}) => {
             Description
       </Text>
       <View>
-        <Text style={{ ...styles.desc, color:colors.white()}}>{selectedDetail?.descwisata}</Text>
+        <Text style={{ ...styles.desc, color:colors.white()}}>{selectedWisata?.descwisata}</Text>
       </View>
       </View>
       <View>
@@ -110,6 +165,67 @@ const Detail = ({route}) => {
           }}
         />
       </View>
+      <ActionSheet
+        ref={actionSheetRef}
+        containerStyle={{
+          borderTopLeftRadius: 25,
+          borderTopRightRadius: 25,
+        }}
+        indicatorStyle={{
+          width: 100,
+        }}
+        gestureEnabled={true}
+        defaultOverlayOpacity={0.3}>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={navigateEdit}
+          >
+          <Text
+            style={{
+              fontFamily: fontType['Pjs-Medium'],
+              color: colors.black(),
+              fontSize: 18,
+            }}>
+            Edit
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={handleDelete}>
+          <Text
+            style={{
+              fontFamily: fontType['Pjs-Medium'],
+              color: colors.black(),
+              fontSize: 18,
+            }}>
+            Delete
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingVertical: 15,
+          }}
+          onPress={closeActionSheet}>
+          <Text
+            style={{
+              fontFamily: fontType['Pjs-Medium'],
+              color: 'red',
+              fontSize: 18,
+            }}>
+            Cancel
+          </Text>
+        </TouchableOpacity>
+      </ActionSheet>
     </View>
     </Animated.ScrollView>
   );
@@ -154,8 +270,8 @@ const itemHorizontal = StyleSheet.create({
   },
   cardImage: scrollA => ({
     width: '113%',
-    height: 300,
-    marginTop: -15,
+    height: 250,
+    marginTop: -18,
     marginLeft: -24,
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
