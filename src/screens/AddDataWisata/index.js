@@ -1,9 +1,12 @@
 import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
-import {ArrowLeft} from 'iconsax-react-native';
+import {ArrowLeft, AddSquare, Add} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
+import FastImage from 'react-native-fast-image';
 import {fontType, colors} from '../../theme';
-import axios from 'axios';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const AddDataWisata = () => {
   const dataCategory = [
@@ -36,151 +39,207 @@ const AddDataWisata = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const handleImagePick = async () => {
+    ImagePicker.openPicker({
+      width: 1920,
+      height: 1080,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setImage(image.path);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   const handleUpload = async () => {
+    let filename = image.substring(image.lastIndexOf('/') + 1);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+    const reference = storage().ref(`wisataimages/${filename}`);
+
     setLoading(true);
     try {
-      await axios.post('https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination', {
-          title: wisataData.title,
-          category: wisataData.category,
-          image,
-          descwisata: wisataData.descwisata,
-          totalComments: wisataData.totalComments,
-          location: wisataData.location,
-          price: wisataData.price,
-        })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      await reference.putFile(image);
+      const url = await reference.getDownloadURL();
+      await firestore().collection('wisata').add({
+        title: wisataData.title,
+        descwisata: wisataData.descwisata,
+        image: url,
+        createdAt: wisataData.createdAt,
+        category: wisataData.category,
+        location: wisataData.location,
+        price: wisataData.price,
+        totalComments: wisataData.totalComments,
+      });
       setLoading(false);
-      navigation.navigate('Profile');
-    } catch (e) {
-      console.log(e);
+      console.log('Wisata Added!');
+      navigation.navigate('AddWisata');
+    } catch (error) {
+      console.log(error);
     }
   };
+  
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <ArrowLeft color={colors.black()} variant="Linear" size={24} />
-        </TouchableOpacity>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.title}>Add New Destination</Text>
-        </View>
-      </View>
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: 24,
-          paddingVertical: 10,
-          gap: 10,
-        }}
-      >
-        <View style={textInput.borderDashed}>
-          <TextInput
-            placeholder="Title"
-            value={wisataData.title}
-            onChangeText={(text) => handleChange("title", text)}
-            placeholderTextColor={colors.grey(0.6)}
-            multiline
-            style={textInput.title}
-          />
-        </View>
-        <View style={[textInput.borderDashed, { minHeight: 250 }]}>
-          <TextInput
-            placeholder="Description"
-            value={wisataData.description}
-            onChangeText={(text) => handleChange("descwisata", text)}
-            placeholderTextColor={colors.grey(0.6)}
-            multiline
-            style={textInput.description}
-          />
-        </View>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Image"
-            value={image}
-            onChangeText={(text) => setImage(text)}
-            placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
-          />
-        </View>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Location"
-            value={wisataData.location}
-            onChangeText={(text) => handleChange("location", text)}
-            placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
-          />
-        </View>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Rating"
-            value={wisataData.totalComments}
-            onChangeText={(text) => handleChange("totalComments", text)}
-            placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
-          />
-        </View>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Price"
-            value={wisataData.price}
-            onChangeText={(text) => handleChange("price", text)}
-            placeholderTextColor={colors.grey(0.6)}
-            style={textInput.image}
-          />
-        </View>
-        <View style={[textInput.borderDashed]}>
-          <Text
-            style={{
-              fontSize: 16,
-              fontFamily: fontType["Pjs-Regular"],
-              color: colors.grey(0.6),
-            }}
-          >
-            Category
-          </Text>
-          <View style={category.container}>
-            {dataCategory.map((item, index) => {
-              const bgColor =
-                item.id === wisataData.category.id
-                  ? colors.aqua()
-                  : colors.grey(0.05);
-              const color =
-                item.id === wisataData.category.id
-                  ? colors.white()
-                  : colors.grey();
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() =>
-                    handleChange("category", { id: item.id, name: item.name })
-                  }
-                  style={[category.item, { backgroundColor: bgColor }]}
-                >
-                  <Text style={[category.name, { color: color }]}>
-                    {item.name}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-      </ScrollView>
-      <View style={styles.bottomBar}>
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={colors.aqua()} />
-        </View>
-      )}
-      <TouchableOpacity style={styles.button} onPress={handleUpload}>
-          <Text style={styles.buttonLabel}>Add Destination</Text>
+    <View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <ArrowLeft color={colors.black()} variant="Linear" size={24} />
       </TouchableOpacity>
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <Text style={styles.title}>Add New Destination</Text>
       </View>
     </View>
+    <ScrollView
+      contentContainerStyle={{
+        paddingHorizontal: 24,
+        paddingVertical: 10,
+        gap: 10,
+      }}>
+      <View style={textInput.borderDashed}>
+        <TextInput
+          placeholder="Title"
+          value={wisataData.title}
+          onChangeText={text => handleChange('title', text)}
+          placeholderTextColor={colors.grey(0.6)}
+          multiline
+          style={textInput.title}
+        />
+      </View>
+      <View style={[textInput.borderDashed, {minHeight: 250}]}>
+        <TextInput
+          placeholder="Description"
+          value={wisataData.descwisata}
+          onChangeText={text => handleChange('descwisata', text)}
+          placeholderTextColor={colors.grey(0.6)}
+          multiline
+          style={textInput.title}
+        />
+      </View>
+      <View style={textInput.borderDashed}>
+        <TextInput
+          placeholder="Location"
+          value={wisataData.location}
+          onChangeText={text => handleChange('location', text)}
+          placeholderTextColor={colors.grey(0.6)}
+          multiline
+          style={textInput.title}
+        />
+      </View>
+      <View style={textInput.borderDashed}>
+        <TextInput
+          placeholder="Rating"
+          value={wisataData.totalComments}
+          onChangeText={text => handleChange('totalComments', text)}
+          placeholderTextColor={colors.grey(0.6)}
+          multiline
+          style={textInput.title}
+        />
+      </View>
+      <View style={textInput.borderDashed}>
+        <TextInput
+          placeholder="Price"
+          value={wisataData.price}
+          onChangeText={text => handleChange('price', text)}
+          placeholderTextColor={colors.grey(0.6)}
+          multiline
+          style={textInput.title}
+        />
+      </View>
+      <View style={[textInput.borderDashed]}>
+        <Text style={category.title}>Category</Text>
+        <View style={category.container}>
+          {dataCategory.map((item, index) => {
+            const bgColor =
+              item.id === wisataData.category.id
+                ? colors.black()
+                : colors.grey(0.08);
+            const color =
+              item.id === wisataData.category.id
+                ? colors.white()
+                : colors.grey();
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() =>
+                  handleChange('category', {id: item.id, name: item.name})
+                }
+                style={[category.item, {backgroundColor: bgColor}]}>
+                <Text style={[category.name, {color: color}]}>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+      {image ? (
+        <View style={{position: 'relative'}}>
+          <FastImage
+            style={{width: '100%', height: 127, borderRadius: 5}}
+            source={{
+              uri: image,
+              headers: {Authorization: 'someAuthToken'},
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.cover}
+          />
+          <TouchableOpacity
+            style={{
+              position: 'absolute',
+              top: -5,
+              right: -5,
+              backgroundColor: colors.blue(),
+              borderRadius: 25,
+            }}
+            onPress={() => setImage(null)}>
+            <Add
+              size={20}
+              variant="Linear"
+              color={colors.white()}
+              style={{transform: [{rotate: '45deg'}]}}
+            />
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity onPress={handleImagePick}>
+          <View
+            style={[
+              textInput.borderDashed,
+              {
+                gap: 10,
+                paddingVertical: 30,
+                justifyContent: 'center',
+                alignItems: 'center',
+              },
+            ]}>
+            <AddSquare color={colors.grey(0.6)} variant="Linear" size={42} />
+            <Text
+              style={{
+                fontFamily: fontType['Pjs-Regular'],
+                fontSize: 12,
+                color: colors.grey(0.6),
+              }}>
+              Upload Destination Thumbnail
+            </Text>
+          </View>
+        </TouchableOpacity>
+      )}
+    </ScrollView>
+    <View style={styles.bottomBar}>
+      <TouchableOpacity style={styles.button} onPress={handleUpload}>
+        <Text style={styles.buttonLabel}>Add Destination</Text>
+      </TouchableOpacity>
+    </View>
+    {loading && (
+      <View style={styles.loadingOverlay}>
+        <ActivityIndicator size="large" color={colors.aqua()} />
+      </View>
+    )}
+  </View>
   );
 };
 

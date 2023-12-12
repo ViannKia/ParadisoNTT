@@ -1,11 +1,11 @@
 import React, {useState, useRef, useEffect} from 'react';
-import { BlogList} from '../../../data';
 import FastImage from 'react-native-fast-image';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Animated, ActivityIndicator} from 'react-native';
 import { Location, Save2, Star1, Back, More} from 'iconsax-react-native';
 import { fontType, colors } from '../../theme';
 import { useNavigation} from '@react-navigation/native';
-import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 import ActionSheet from 'react-native-actions-sheet';
 
 const Detail = ({route}) => {
@@ -23,9 +23,7 @@ const Detail = ({route}) => {
   const [iconStates, setIconStates] = useState({
   bookmarked: {variant: 'Linear', color: colors.grey(0.6)},
   });
-  // const selectedDetail = BlogList.find(wisata => wisata?.id === id);
   const navigation = useNavigation();
-  // console.log('Selected Detail:', selectedDetail);
   const toggleIcon = iconName => {
     setIconStates(prevStates => ({
       ...prevStates,
@@ -37,6 +35,28 @@ const Detail = ({route}) => {
             : colors.grey(0.6),
       },
     }));
+  };
+
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('wisata')
+      .doc(id)
+      .onSnapshot(documentSnapshot => {
+        const wisataData = documentSnapshot.data();
+        if (wisataData) {
+          console.log('Wisata Data: ', wisataData);
+          setSelectedWisata(wisataData);
+        } else {
+          console.log(`Wisata with ID ${id} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
+  }, [id]);
+
+  const navigateEditwisata = () => {
+    closeActionSheet();
+    navigation.navigate('EditWisata', {id});
   };
 
   const [selectedWisata, setSelectedWisata] = useState(null);
@@ -53,36 +73,33 @@ const Detail = ({route}) => {
     actionSheetRef.current?.hide();
   };
 
-  useEffect(() => {
-    getWisataById();
-  }, [id]);
-  
-  const getWisataById = async () => {
-    try {
-      const response = await axios.get(
-        `https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`,
-      );
-      setSelectedWisata(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const navigateEdit = () => {
     closeActionSheet()
     navigation.navigate('EditWisata', {id})
   }
   const handleDelete = async () => {
-   await axios.delete(`https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`)
-      .then(() => {
-        closeActionSheet()
-        navigation.navigate('Profile');
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+    setLoading(true);
+    try {
+      await firestore()
+        .collection('wisata')
+        .doc(id)
+        .delete()
+        .then(() => {
+          console.log('Wisata Deleted!');
+        });
+      if (selectedWisata?.image) {
+        const imageRef = storage().refFromURL(selectedWisata?.image);
+        await imageRef.delete();
+      }
+      console.log('Wisata Deleted!');
+      closeActionSheet();
+      setSelectedWisata(null);
+      setLoading(false)
+      navigation.navigate('AddWisata');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Animated.ScrollView

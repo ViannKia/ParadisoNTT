@@ -2,51 +2,58 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  Image,
   View,
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import {Edit, Location} from 'iconsax-react-native';
-import React, {useState, useCallback} from 'react';
-import FastImage from 'react-native-fast-image';
-import {ProfileData} from '../../../data';
+import {Edit} from 'iconsax-react-native';
+import React, {useEffect, useState, useCallback} from 'react';
 import {ItemSmall} from '../../components';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {fontType, colors} from '../../theme';
-import axios from 'axios';
+import firestore from '@react-native-firebase/firestore';
 
 const New = () => {
   const navigation = useNavigation();
   const [loading, setLoading] = useState(true);
   const [wisataData, setWisataData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const getWisata = async () => {
-    try {
-      const response = await axios.get(
-        'https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination',
-      );
-      setWisataData(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('wisata')
+      .onSnapshot(querySnapshot => {
+        const wisata = [];
+        querySnapshot.forEach(documentSnapshot => {
+          wisata.push({
+            ...documentSnapshot.data(),
+            id: documentSnapshot.id,
+          });
+        });
+        setWisataData(wisata);
+        setLoading(false);
+      });
+    return () => subscriber();
+  }, []);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
-      getWisata();
+      firestore()
+        .collection('wisata')
+        .onSnapshot(querySnapshot => {
+          const wisata = [];
+          querySnapshot.forEach(documentSnapshot => {
+            wisata.push({
+              ...documentSnapshot.data(),
+              id: documentSnapshot.id,
+            });
+          });
+          setWisataData(wisata);
+        });
       setRefreshing(false);
     }, 1500);
   }, []);
-
-  useFocusEffect(
-    useCallback(() => {
-      getWisata();
-    }, []),
-  );
 
   return (
     <View style={styles.container}>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "384431428041",
+    "project_id": "paradisontt",
+    "storage_bucket": "paradisontt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:384431428041:android:b1fec484e0e4f2c53d5818",
+        "android_client_info": {
+          "package_name": "com.paradisontt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtxochnGjm4KqUSP9E7VRbDSbmZ1w1VJM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
