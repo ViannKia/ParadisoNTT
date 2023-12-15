@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, KeyboardAvoidingView} from 'react-native';
 import {ArrowLeft, AddSquare, Add} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 import FastImage from 'react-native-fast-image';
@@ -7,6 +7,7 @@ import {fontType, colors} from '../../theme';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const AddDataWisata = () => {
   const dataCategory = [
@@ -18,7 +19,7 @@ const AddDataWisata = () => {
     { id: 6, name: "Village" },
     { id: 7, name: "Park" },
   ];
-  const [wisataData, setWisataData] = useState({
+  const [wisaData, setWisataData] = useState({
     title: '',
     descwisata: '',
     createdAt: '',
@@ -29,7 +30,7 @@ const AddDataWisata = () => {
   });
   const handleChange = (key, value) => {
     setWisataData({
-      ...wisataData,
+      ...wisaData,
       [key]: value,
     });
   };
@@ -63,17 +64,19 @@ const AddDataWisata = () => {
 
     setLoading(true);
     try {
+      const authorId = auth().currentUser.uid;
       await reference.putFile(image);
       const url = await reference.getDownloadURL();
       await firestore().collection('wisata').add({
-        title: wisataData.title,
-        descwisata: wisataData.descwisata,
+        title: wisaData.title,
+        descwisata: wisaData.descwisata,
         image: url,
-        createdAt: wisataData.createdAt,
-        category: wisataData.category,
-        location: wisataData.location,
-        price: wisataData.price,
-        totalComments: wisataData.totalComments,
+        createdAt: wisaData.createdAt,
+        category: wisaData.category,
+        location: wisaData.location,
+        price: wisaData.price,
+        totalComments: wisaData.totalComments,
+        authorId
       });
       setLoading(false);
       console.log('Wisata Added!');
@@ -84,6 +87,10 @@ const AddDataWisata = () => {
   };
   
   return (
+    <KeyboardAvoidingView
+      style={{flex: 1}}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      enabled>
     <View style={styles.container}>
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -102,7 +109,7 @@ const AddDataWisata = () => {
       <View style={textInput.borderDashed}>
         <TextInput
           placeholder="Title"
-          value={wisataData.title}
+          value={wisaData.title}
           onChangeText={text => handleChange('title', text)}
           placeholderTextColor={colors.grey(0.6)}
           multiline
@@ -112,7 +119,7 @@ const AddDataWisata = () => {
       <View style={[textInput.borderDashed, {minHeight: 250}]}>
         <TextInput
           placeholder="Description"
-          value={wisataData.descwisata}
+          value={wisaData.descwisata}
           onChangeText={text => handleChange('descwisata', text)}
           placeholderTextColor={colors.grey(0.6)}
           multiline
@@ -122,7 +129,7 @@ const AddDataWisata = () => {
       <View style={textInput.borderDashed}>
         <TextInput
           placeholder="Location"
-          value={wisataData.location}
+          value={wisaData.location}
           onChangeText={text => handleChange('location', text)}
           placeholderTextColor={colors.grey(0.6)}
           multiline
@@ -132,7 +139,7 @@ const AddDataWisata = () => {
       <View style={textInput.borderDashed}>
         <TextInput
           placeholder="Rating"
-          value={wisataData.totalComments}
+          value={wisaData.totalComments}
           onChangeText={text => handleChange('totalComments', text)}
           placeholderTextColor={colors.grey(0.6)}
           multiline
@@ -142,7 +149,7 @@ const AddDataWisata = () => {
       <View style={textInput.borderDashed}>
         <TextInput
           placeholder="Price"
-          value={wisataData.price}
+          value={wisaData.price}
           onChangeText={text => handleChange('price', text)}
           placeholderTextColor={colors.grey(0.6)}
           multiline
@@ -154,11 +161,11 @@ const AddDataWisata = () => {
         <View style={category.container}>
           {dataCategory.map((item, index) => {
             const bgColor =
-              item.id === wisataData.category.id
+              item.id === wisaData.category.id
                 ? colors.black()
                 : colors.grey(0.08);
             const color =
-              item.id === wisataData.category.id
+              item.id === wisaData.category.id
                 ? colors.white()
                 : colors.grey();
             return (
@@ -240,6 +247,7 @@ const AddDataWisata = () => {
       </View>
     )}
   </View>
+  </KeyboardAvoidingView>
   );
 };
 

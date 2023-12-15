@@ -9,6 +9,9 @@ import {
   New,
   Search,
   EditDataWisata,
+  SplashScreen,
+  Login,
+  Register,
 } from '../screens';
 import {Home2, ProfileCircle, AddCircle} from 'iconsax-react-native';
 import {fontType, colors} from '../theme';
@@ -20,7 +23,7 @@ function MainApp() {
     <Tab.Navigator
       screenOptions={{
         tabBarHideOnKeyboard: true,
-        tabBarActiveTintColor: colors.blue(),
+        tabBarActiveTintColor: colors.aqua(),
         tabBarInactiveTintColor: colors.black(),
         tabBarStyle: {
           paddingBottom: 10,
@@ -83,7 +86,7 @@ function MainApp() {
 }
 const Router = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator initialRouteName="SplashScreen">
       <Stack.Screen
         name="MainApp"
         component={MainApp}
@@ -132,6 +135,21 @@ const Router = () => {
           gestureDirection: 'horizontal',
           ...TransitionPresets.SlideFromRightIOS,
         }}
+      />
+      <Stack.Screen
+        name="SplashScreen"
+        component={SplashScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Register"
+        component={Register}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );

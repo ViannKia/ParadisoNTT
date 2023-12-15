@@ -10,6 +10,7 @@ import ActionSheet from 'react-native-actions-sheet';
 
 const Detail = ({route}) => {
   const {id} = route.params;
+  const navigation = useNavigation();
   const scrollA = useRef(new Animated.Value(0)).current;
   const [iconColor, setIconColor] = useState('black');
   const handleIconPress = () => {
@@ -19,44 +20,6 @@ const Detail = ({route}) => {
   } else {
     setIconColor('black');
   }
-  };
-  const [iconStates, setIconStates] = useState({
-  bookmarked: {variant: 'Linear', color: colors.grey(0.6)},
-  });
-  const navigation = useNavigation();
-  const toggleIcon = iconName => {
-    setIconStates(prevStates => ({
-      ...prevStates,
-      [iconName]: {
-        variant: prevStates[iconName].variant === 'Linear' ? 'Bold' : 'Linear',
-        color:
-          prevStates[iconName].variant === 'Linear'
-            ? colors.blue()
-            : colors.grey(0.6),
-      },
-    }));
-  };
-
-  useEffect(() => {
-    const subscriber = firestore()
-      .collection('wisata')
-      .doc(id)
-      .onSnapshot(documentSnapshot => {
-        const wisataData = documentSnapshot.data();
-        if (wisataData) {
-          console.log('Wisata Data: ', wisataData);
-          setSelectedWisata(wisataData);
-        } else {
-          console.log(`Wisata with ID ${id} not found.`);
-        }
-      });
-    setLoading(false);
-    return () => subscriber();
-  }, [id]);
-
-  const navigateEditwisata = () => {
-    closeActionSheet();
-    navigation.navigate('EditWisata', {id});
   };
 
   const [selectedWisata, setSelectedWisata] = useState(null);
@@ -100,7 +63,28 @@ const Detail = ({route}) => {
       console.error(error);
     }
   };
+  
+  useEffect(() => {
+    const subscriber = firestore()
+      .collection('wisata')
+      .doc(id)
+      .onSnapshot(documentSnapshot => {
+        const wisataData = documentSnapshot.data();
+        if (wisataData) {
+          console.log('Wisata Data: ', wisataData);
+          setSelectedWisata(wisataData);
+        } else {
+          console.log(`Wisata with ID ${id} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
+  }, [id]);
 
+  const navigateEditwisata = () => {
+    closeActionSheet();
+    navigation.navigate('EditWisata', {id});
+  };
   return (
     <Animated.ScrollView
     showsVerticalScrollIndicator={false}

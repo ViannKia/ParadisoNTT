@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.greynew(),
+    marginTopTop: 10,
   },
   header: {
     paddingHorizontal: 24,

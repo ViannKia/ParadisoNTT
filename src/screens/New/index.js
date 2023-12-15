@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import {Edit} from 'iconsax-react-native';
+import {MessageAdd1} from 'iconsax-react-native';
 import React, {useEffect, useState, useCallback} from 'react';
 import {ItemSmall} from '../../components';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
@@ -83,7 +83,7 @@ const New = () => {
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={() => navigation.navigate('AddDataWisata')}>
-        <Edit color={colors.white()} variant="Linear" size={20} />
+        <MessageAdd1 color={colors.white()} variant="Linear" size={20} />
       </TouchableOpacity>
     </View>
   );

@@ -4,8 +4,6 @@ import {Receipt21, Location, Message} from 'iconsax-react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {fontType, colors} from '../theme';
-import {formatDate} from '../utils/formatDate';
-import { Image } from 'react-native-svg';
 
 const ItemSmall = ({item}) => {
   const navigation = useNavigation();

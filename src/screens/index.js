@@ -5,4 +5,7 @@ import Search from "./Search";
 import AddDataWisata from "./AddDataWisata";
 import EditDataWisata from "./EditDataWisata";
 import New from "./New";
-export {Home, Detail, Profile, Search, AddDataWisata, EditDataWisata, New}
+import Login from "./Login";
+import Register from "./Register";
+import SplashScreen from "./SplashScreen";
+export {Home, Detail, Profile, Search, AddDataWisata, EditDataWisata, New, Login, Register, SplashScreen}

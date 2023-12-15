@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator} from 'react-native';
-import {ArrowLeft} from 'iconsax-react-native';
+import {ArrowLeft, AddSquare, Add} from 'iconsax-react-native';
 import {useNavigation} from '@react-navigation/native';
 import {fontType, colors} from '../../theme';
-import axios from 'axios';
+import FastImage from 'react-native-fast-image';
+import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
+import firestore from '@react-native-firebase/firestore';
 
 const EditDataWisata = ({route}) => {
 const {id} = route.params;
@@ -22,8 +25,8 @@ const {id} = route.params;
     createdAt: '',
     location: '',
     category: {},
-    totalComments: 0,
-    price: 0,
+    totalComments: '',
+    price: '',
   });
   const handleChange = (key, value) => {
     setWisataData({
@@ -31,60 +34,89 @@ const {id} = route.params;
       [key]: value,
     });
   };
+
+  const [oldImage, setOldImage] = useState(null);
+
   const [image, setImage] = useState(null);
 
   const navigation = useNavigation();
 
+  const handleImagePick = async () => {
+    ImagePicker.openPicker({
+      width: 1920,
+      height: 1080,
+      cropping: true,
+    })
+      .then(image => {
+        console.log(image);
+        setImage(image.path);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    getWisataById();
-  }, [id]);
-
-  const getWisataById = async () => {
-    try {
-      const response = await axios.get(
-        `https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`,
-      );
-      setWisataData({
-        title : response.data.title,
-        descwisata : response.data.descwisata,
-        location : response.data.location,
-        totalComments : response.data.totalComments,
-        price : response.data.price,
-        category : {
-            id : response.data.category.id,
-            name : response.data.category.name
-        }
-      })
-    setImage(response.data.image)
-      setLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const handleUpdate = async () => {
-    setLoading(true);
-    try {
-      await axios
-        .put(`https://656c2042e1e03bfd572e017d.mockapi.io/paradisonttapp/destination/${id}`, {
+    const subscriber = firestore()
+      .collection('wisata')
+      .doc(id)
+      .onSnapshot(documentSnapshot => {
+        const wisataData = documentSnapshot.data();
+        if (wisataData) {
+          console.log('Wisata Data: ', wisataData);
+          setWisataData({
             title: wisataData.title,
-            category: wisataData.category,
-            image,
             descwisata: wisataData.descwisata,
             totalComments: wisataData.totalComments,
             location: wisataData.location,
             price: wisataData.price,
-        })
-        .then(function (response) {
-          console.log(response);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+            category: {
+              id: wisataData.category.id,
+              name: wisataData.category.name,
+            },
+          });
+          setOldImage(wisataData.image);
+          setImage(wisataData.image);
+          setLoading(false);
+        } else {
+          console.log(`Wisata with ID ${id} not found.`);
+        }
+      });
+    setLoading(false);
+    return () => subscriber();
+  }, [id]);
+
+  const handleUpdate = async () => {
+    setLoading(true);
+    let filename = image.substring(image.lastIndexOf('/') + 1);
+    const extension = filename.split('.').pop();
+    const name = filename.split('.').slice(0, -1).join('.');
+    filename = name + Date.now() + '.' + extension;
+    const reference = storage().ref(`wisataimages/${filename}`);
+    try {
+      if (image !== oldImage && oldImage) {
+        const oldImageRef = storage().refFromURL(oldImage);
+        await oldImageRef.delete();
+      }
+      if (image !== oldImage) {
+        await reference.putFile(image);
+      }
+      const url =
+        image !== oldImage ? await reference.getDownloadURL() : oldImage;
+      await firestore().collection('wisata').doc(id).update({
+        title: wisataData.title,
+        descwisata: wisataData.descwisata,
+        image: url,
+        location: wisataData.location,
+        price: wisataData.price,
+        totalComments: wisataData.totalComments,
+      });
       setLoading(false);
-      navigation.navigate('Profile');
-    } catch (e) {
-      console.log(e);
+      console.log('Wisata Updated!');
+      navigation.navigate('AddWisata', {id});
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -95,7 +127,7 @@ const {id} = route.params;
           <ArrowLeft color={colors.black()} variant="Linear" size={24} />
         </TouchableOpacity>
         <View style={{flex: 1, alignItems: 'center'}}>
-          <Text style={styles.title}>Edit Destination</Text>
+          <Text style={styles.title}>Edit blog</Text>
         </View>
       </View>
       <ScrollView
@@ -110,7 +142,6 @@ const {id} = route.params;
             value={wisataData.title}
             onChangeText={text => handleChange('title', text)}
             placeholderTextColor={colors.grey(0.6)}
-            multiline
             style={textInput.title}
           />
         </View>
@@ -121,43 +152,34 @@ const {id} = route.params;
             onChangeText={text => handleChange('descwisata', text)}
             placeholderTextColor={colors.grey(0.6)}
             multiline
-            style={textInput.content}
+            style={textInput.title}
           />
         </View>
-        <View style={[textInput.borderDashed]}>
-          <TextInput
-            placeholder="Image"
-            value={image}
-            onChangeText={text => setImage(text)}
-            placeholderTextColor={colors.grey(0.6)}
-            style={textInput.content}
-          />
-        </View>
-        <View style={[textInput.borderDashed]}>
+        <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Location"
             value={wisataData.location}
             onChangeText={text => handleChange('location', text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.content}
+            style={textInput.title}
           />
         </View>
-        <View style={[textInput.borderDashed]}>
+        <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Rating"
             value={wisataData.totalComments}
             onChangeText={text => handleChange('totalComments', text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.content}
+            style={textInput.title}
           />
         </View>
-        <View style={[textInput.borderDashed]}>
+        <View style={textInput.borderDashed}>
           <TextInput
             placeholder="Price"
             value={wisataData.price}
             onChangeText={text => handleChange('price', text)}
             placeholderTextColor={colors.grey(0.6)}
-            style={textInput.content}
+            style={textInput.title}
           />
         </View>
         <View style={[textInput.borderDashed]}>
@@ -194,10 +216,62 @@ const {id} = route.params;
             })}
           </View>
         </View>
+        {image ? (
+          <View style={{position: 'relative'}}>
+            <FastImage
+              style={{width: '100%', height: 127, borderRadius: 5}}
+              source={{
+                uri: image,
+                headers: {Authorization: 'someAuthToken'},
+                priority: FastImage.priority.high,
+              }}
+              resizeMode={FastImage.resizeMode.cover}
+            />
+            <TouchableOpacity
+              style={{
+                position: 'absolute',
+                top: -5,
+                right: -5,
+                backgroundColor: colors.blue(),
+                borderRadius: 25,
+              }}
+              onPress={() => setImage(null)}>
+              <Add
+                size={20}
+                variant="Linear"
+                color={colors.white()}
+                style={{transform: [{rotate: '45deg'}]}}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity onPress={handleImagePick}>
+            <View
+              style={[
+                textInput.borderDashed,
+                {
+                  gap: 10,
+                  paddingVertical: 30,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                },
+              ]}>
+              <AddSquare color={colors.grey(0.6)} variant="Linear" size={42} />
+              <Text
+                style={{
+                  fontFamily: fontType['Pjs-Regular'],
+                  fontSize: 12,
+                  color: colors.grey(0.6),
+                }}>
+                Upload Image Thumbnail
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
       </ScrollView>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.button} onPress={handleUpdate}>
-          <Text style={styles.buttonLabel}>Update</Text>
+          <Text style={styles.buttonLabel}>Update Data</Text>
         </TouchableOpacity>
       </View>
       {loading && (
